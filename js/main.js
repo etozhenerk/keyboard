@@ -38,7 +38,7 @@ function init() {
     /*добавил backspace и опустил ниже условий, что бы работала визуальная клавиатура 
     не уверен, что необходим функционал работающего backspace, но мне был необходим
     */
-    if (event.key.startsWith("F") && event.kay.length > 1 || event.key === "Backspace") {
+    if (event.key.startsWith("F") && event.key.length > 1 || event.key === "Backspace") {
       return;
     }
 
