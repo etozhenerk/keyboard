@@ -26,7 +26,6 @@ function init() {
     и запятая */
     const elementData = document.querySelector('[data-code="' + event.code + '"]');
 
-    console.log(event);
 
     if (element) {
       element.classList.add("hint");
