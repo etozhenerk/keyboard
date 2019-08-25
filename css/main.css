@@ -23,7 +23,6 @@ body {
   display: none;
 }
 .results-title {
-  display: -webkit-box;
   display: flex;
   font-family: 'PT Mono', monospace;
   margin-bottom: 15px;
@@ -39,18 +38,16 @@ body {
   padding: 50px 0;
 }
 .indicators {
-  display: -webkit-box;
   display: flex;
   border-radius: 8px;
   border: 1px solid #D9D9D9;
   margin-bottom: 35px;
   padding-left: 5px;
   padding-right: 5px;
-  -webkit-box-pack: justify;
-          justify-content: space-between;
+  justify-content: flex-start;
+  max-width: 50%;
 }
 .indicator {
-  display: -webkit-box;
   display: flex;
   margin-right: 20px;
   font-size: 12px;
@@ -106,7 +103,6 @@ body {
   color: #FF0000;
 }
 .keyboard .line {
-  display: -webkit-box;
   display: flex;
 }
 .keyboard .line div {
@@ -726,4 +722,3 @@ body {
 .strong {
   font-weight: 700;
 }
-/*# sourceMappingURL=main.css.map */

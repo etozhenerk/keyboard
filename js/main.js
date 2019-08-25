@@ -11,6 +11,12 @@ const lines = getLines(text);
 
 let letterId = 1;
 
+let startMoment = null;
+let started = false;
+
+let letterCounter = 0;
+let letterCounterError = 0;
+
 init();
 
 function init() {
@@ -18,55 +24,92 @@ function init() {
 
   inputElement.focus();
 
+  window.addEventListener("click", () =>{
+    inputElement.focus();
+  });
+
   inputElement.addEventListener("keydown", event => {
     const currentLineNumber = getCurrentLineNumber();
-    const element = document.querySelector('[data-key="' + event.key + '"]');
+    const element = document.querySelector(
+      '[data-key="' + event.key.toLowerCase() + '"]'
+    );
     const currentLetter = getCurrentLetter();
-    /*пришлось добавить ещё и data-code, что бы начали работать слеш, правый и левые шифты
-    и запятая */
-    const elementData = document.querySelector('[data-code="' + event.code + '"]');
+    const elementCode = document.querySelector(
+      '[data-code="' + event.code + '"]'
+    );
 
+    if (event.key !== "Shift") {
+      letterCounter++;
+    }
+
+    if (!started) {
+      started = true;
+      startMoment = Date.now();
+    }
+
+    if (event.key.startsWith("F") && event.key.length > 1) {
+      return;
+    }
 
     if (element) {
       element.classList.add("hint");
     }
 
-    if(elementData){
-      elementData.classList.add("hint");
-    }
-    
-    /*добавил backspace и опустил ниже условий, что бы работала визуальная клавиатура 
-    не уверен, что необходим функционал работающего backspace, но мне был необходим
-    */
-    if (event.key.startsWith("F") && event.key.length > 1 || event.key === "Backspace") {
-      return;
+    if (elementCode) {
+      elementCode.classList.add("hint");
     }
 
     const isKey = event.key === currentLetter.original;
     const isEnter = event.key === "Enter" && currentLetter.original === "\n";
 
-    if (isKey|| isEnter) {
+    if (isKey || isEnter) {
       letterId++;
       update();
     } else {
       event.preventDefault();
+      if (event.key !== "Shift") {
+        letterCounterError++;
+        for (const line of lines) {
+          for (const letter of line) {
+            if (letter.original === currentLetter.original) {
+              letter.success = false;
+            }
+          }
+        }
+        update();
+      }
     }
 
     if (currentLineNumber !== getCurrentLineNumber()) {
       inputElement.value = "";
       event.preventDefault();
+
+      const time = Date.now() - startMoment;
+      document.querySelector("#wordsSpeed").textContent = Math.round(
+        (letterCounter * 60000) / time
+      );
+      document.querySelector("#errorsPercent").textContent =
+        Math.floor((10000 * letterCounterError) / letterCounter) / 100 + "%";
+
+      started = false;
+      letterCounter = 0;
+      letterCounterError = 0;
     }
   });
 
   inputElement.addEventListener("keyup", event => {
-    const element = document.querySelector('[data-key="' + event.key + '"]');
-    const elementData = document.querySelector('[data-code="' + event.code + '"]');
+    const element = document.querySelector(
+      '[data-key="' + event.key.toLowerCase() + '"]'
+    );
+    const elementData = document.querySelector(
+      '[data-code="' + event.code + '"]'
+    );
 
     if (element) {
       element.classList.remove("hint");
     }
 
-    if(elementData){
+    if (elementData) {
       elementData.classList.remove("hint");
     }
   });
@@ -129,6 +172,8 @@ function lineToHtml(line) {
 
     if (letterId > letter.id) {
       spanElement.classList.add("done");
+    } else if (!letter.success) {
+      spanElement.classList.add("hint");
     }
   }
   return divElement;
